@@ -22,85 +22,110 @@ botonGet.addEventListener('click',function() {
 });
 */
 // Nombre: YADIRA YAHAIRA HUAMAN MEZA
-const apiUrl = "http://localhost/app-php-js-chaat-yes-no-senati/api.php";
+const apiUrl = "http://localhost/app-php-js-chat-yes-no-senati/api.php";
+const apiUrlYesNo = "https://yesno.wtf/api";
 
 async function getData() {
-    console.log('Ingreso al get Data');
-    try {
-        const respuesta = await fetch(`${apiUrl}?id=123&nombre=Yadira&apellido=HuamanMeza`, {
-            method: 'GET',
-        });
-
-        const data = await respuesta.json();
-        console.log(data);
-    } catch (error) {
-        console.log("Error al momento de hacer la petición GET:", error);
-    }
+  console.log("ingreso a get data");
+  try {
+    const respuesta = await fetch(
+      `${apiUrl}?id=123&nombre=Diego&apellido=Lipa`,
+      {
+        method: "GET",
+      }
+    );
+    const data = await respuesta.json();
+    console.log("data");
+    console.log(data);
+  } catch (error) {
+    console.log("Error al momento de hacer la peticion GET: ", error);
+  }
 }
 
-let botonGet = document.querySelector('#getdata'); // Cambié getSelection por querySelector
-botonGet.addEventListener('click', function () {
-    getData();
+let botonGet = document.querySelector(".getdata");
+botonGet.addEventListener("click", function () {
+  getData();
 });
 
 async function postData() {
-    console.log('Ingreso al POST Data');
-    try {
-        const  respuesta = await fetch(apiUrl, {
-             method: 'POST',
-             headers:{
-                "Content-Type": "application/json"
-             },
-             body: JSON.stringify({
-                nombre:'Yadira',
-                apellido:'Huaman',
-                lenguaje_favorito: 'JavaScript',
-                color : 'rojo'
-             })            
-             
-        });
-const data_retorna = await respuesta.json();
-console.log(data_retorna);
-
-    } catch (error) {
-        console.log("Error al momento de hacer la peticon POST:",error);
-    }
-    //alert('ingresoaquiiiiiiiiiiiiii')
+  try {
+    const respuesta = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nombre: "Yadira",
+        apellido: "Huaman",
+        lenguaje_favorito: "JavaScript, Pyton",
+        color: "Rojo",
+      }),
+    });
+    const data_retorno = await respuesta.json();
+    console.log(data_retorno);
+  } catch (error) {
+    console.log("Error al momento de hace la peticion POST: ", error);
+  }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-let botonPost = document.querySelector('#post-data');
-botonPost.addEventListener('click', function() {
-    postData();
-//alert ('ingreso aquiii');
+let botonPost = document.querySelector("#post-data");
+botonPost.addEventListener("click", function () {
+  postData();
+});
+
+async function getYesNoData() {
+  try {
+    const respuesta = await fetch(apiUrlYesNo,
+      {
+        method: "GET",
+      }
+    );
+    const data = await respuesta.json();
+    console.log('Aqui llega la información');
+    console.log(data);
+    agregarMensaje(data.answer,false,data.image);
 
 
+  } catch (error) {
+    console.log("Error al momento de hacer la peticion GET: ", error);
+  }
+}
+
+let botonGetYesNo = document.querySelector("#yes-no-data");
+botonGetYesNo.addEventListener("click", function () {
+    getYesNoData();
 });
 
 
-//apuntado a la url 
-//con get a 
-//https://yesno.wtf/api
+// Funcionalidad del chat yes no
+let chatMessages = document.getElementById('chatMessages'); 
+let chatForm = document.getElementById('chatForm');
+let messageInput = document.getElementById('messageInput');
 
-//nombre :Yadira Yahaira Huaman Meza
+function agregarMensaje(mensaje, soyYo = true, imagen = null){
+  const mensajeDiv = document.createElement('div');
+  mensajeDiv.classList.add('message');
+  mensajeDiv.classList.add(soyYo? 'user-message':'api-message');
+  mensajeDiv.textContent = mensaje;
 
-const apiUrl2 = "https://yesno.wtf/api";
+  if(imagen){
+    const img = document.createElement('img');
+    img.src = imagen;
+    mensajeDiv.appendChild(img);
+  }
 
-async function getData() {
-    console.log('Ingreso al get Data');
-    try {
-        const respuesta = await fetch(apiUrl2, {
-            method: 'GET',
-        });
+  setTimeout(() => {
+    chatMessages.scrollTop = chatMessages.scrollHeight
+  }, 500);
 
-        const data = await respuesta.json();
-        console.log(data);
-    } catch (error) {
-        console.log("Error al momento de hacer la petición GET:", error);
-    }
+  chatMessages.appendChild(mensajeDiv);
 }
 
-let botonGet2 = document.querySelector('#getURL'); 
-botonGet2.addEventListener('click', function () {
-    getData();
+chatForm.addEventListener('submit',function(e){
+  e.preventDefault();
+
+  const miMensaje = messageInput.value;
+  agregarMensaje(miMensaje,true);
+  
+  getYesNoData();
 });
